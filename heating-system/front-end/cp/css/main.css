@@ -1,0 +1,65 @@
+body{
+	font-familty:Arial;
+	background:#222222;
+}
+.block{
+	margin:10px;
+	padding:20px;
+	position:relative;
+}
+.block p{
+	margin:20px;
+}
+#info{
+	background-color:#9c4274;
+	background-image: url('left-arrow-right-md.png');
+	background-repeat: no-repeat;
+	background-position: right;
+}
+#ustawieniaPiec{
+	background-color:#ec663c;
+}
+#ustawieniaBoiler{
+	background-color:#47bbb3;
+}
+#ustawieniaBoiler .description{
+	color:#fff;
+}
+#ustawieniaOgrzewanie{
+	background-color:#ff9618;
+}
+.description{
+	position:absolute;
+	top:10px;
+	left:40px;
+	color:#ccc;
+	font-weight:bold;
+	text-transform:uppercase;
+}
+strong{
+	font-weight:bold;
+	font-size:110%;
+}	
+input[type="number"]{
+width:30px;
+}
+
+.info-element,
+.ustawienia-element{
+	margin-top:30px;
+	margin:20px;
+}
+.info-element .element-cell,
+.ustawienia-element .element-cell{
+	width:50%;
+	float:left;
+}
+button,
+.ustawienia-element .element-cell input,
+.ustawienia-element .element-cell select{
+	width:100%;
+}
+.element-full-row{
+	margin-top:10px;
+	width:100%;
+}

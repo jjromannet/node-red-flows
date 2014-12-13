@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+<head>
+<title>Panel Administracyjny</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+ <script type="text/javascript" src="js/knockout-3.2.0.js"></script>
+ <script type="text/javascript" src="js/jquery-2.1.1.js"></script>
+ <script type="text/javascript" src="js/main.js"></script>
+ <link rel="stylesheet" type="text/css" href="css/reset.css"/>
+ <link rel="stylesheet" type="text/css" href="css/main.css"/>
+</head>
+<body>
+<div id="info" class="block">
+<span class="description">Info</span>
+<div class="info-element">
+	<div class="element-cell">temperatura CO piec:</div><div class="element-cell right"><span data-bind="text: tempCO"></span>&deg;C</div>
+	<div style="clear:both"></div>
+</div>
+<div class="info-element">
+	<div class="element-cell">temperatura CWU:</div><div class="element-cell right"><span data-bind="text: tempCWO"></span>&deg;C</div>
+	<div style="clear:both"></div>
+</div>
+<div class="info-element">
+	<div class="element-cell">temperatura powietrza:</div><div class="element-cell right"><span data-bind="text: tempPowietrza"></span>&deg;C</div>
+	<div style="clear:both"></div>
+</div>
+<div class="info-element">
+	<div class="element-cell">zasobnik wegla: </div><div class="element-cell right"><strong data-bind="text: zasobnikPctg"></strong> [<span data-bind="text: zasobnik"></span>/<span data-bind="text: zasobnikMax"></span>]</div>
+	<div style="clear:both"></div>
+</div>
+<div class="info-element">
+	<div class="element-cell">piec w trybie: </div><div class="element-cell right"><strong data-bind="text: trybPieca"></strong></div>
+	<div style="clear:both"></div>
+</div>
+</div>
+
+	<div id="ustawieniaPiec" class="block">
+		<span class="description">Ustawienia - Piec</span>
+
+		<div class="ustawienia-element">
+			<div class="element-full-row"><strong>Tryb:</strong></div>
+			<div class="element-cell">ustawione:</div>
+			<div class="element-cell">
+				<select id="piec-tryb" disabled="disabled">
+					<option>Reczny</option>
+					<option>Wylaczony</option>
+					<option>Automatyczny dzien A</option>
+					<option>Automatyczny dzien B</option>
+					<option>Automatyczny tydzien A</option>
+					<option>Automatyczny tydzien B</option>
+				</select>
+			</div>
+			<div class="element-cell">zmien na:</div>
+			<div class="element-cell">
+				<select id="piec-tryb-nowy">
+					<option>Reczny</option>
+					<option>Wylaczony</option>
+					<option>Automatyczny dzien A</option>
+					<option>Automatyczny dzien B</option>
+					<option>Automatyczny tydzien A</option>
+					<option>Automatyczny tydzien B</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="ustawienia-element">
+			<div class="element-full-row"><strong>Zadana temperatura(&deg;C):</strong></div>
+			<div class="element-cell">ustawione:</div><div class="element-cell"><input type="number" data-bind="value: piecZadana" disabled="disabled"/></div>
+			<div class="element-cell">zmien na:</div><div class="element-cell"><input type="number" data-bind="value: piecZadanaNowa"/></div>
+			<div style="clear:both"></div>
+		</div>
+
+		<div class="ustawienia-element">
+			<div class="element-full-row"><strong>Temperatura zadzialania(&deg;C):</strong></div>
+			<div class="element-cell">ustawione:</div><div class="element-cell"><input type="number" data-bind="value: piecZadzialanie" disabled="disabled"/></div>
+			<div class="element-cell">zmien na:</div><div class="element-cell"><input type="number" data-bind="value: piecZadzialanieNowa"/></div>
+			<div style="clear:both"></div>
+		</div>
+
+		<div class="ustawienia-element">
+			<div class="element-full-row"><strong>GRZANIE</strong></div>
+			<div class="element-full-row"><strong>podawanie(sekundy):</strong></div>
+			<div class="element-cell">ustawione:</div><div class="element-cell"><input type="number" data-bind="value: grzaniePodawanie" disabled="disabled"/></div>
+			<div class="element-cell">zmien na:</div><div class="element-cell"><input type="number" data-bind="value: grzaniePodawanieNowa"/></div>
+			<div class="element-full-row"><strong>przerwa(sekundy):</strong></div>
+			<div class="element-cell">ustawione:</div><div class="element-cell"><input type="number" data-bind="value:grzaniePrzerwa" disabled="disabled"/></div>
+			<div class="element-cell">zmien na:</div><div class="element-cell"><input type="number" data-bind="value:grzaniePrzerwaNowa"/></div>
+			<div style="clear:both"></div>
+		</div>
+		<div class="ustawienia-element">
+			<div class="element-full-row"><strong>PODTRZYMANIE</strong></div>
+			<div class="element-full-row"><strong>podawanie(&deg;C):</strong></div>
+			<div class="element-cell">ustawione:</div><div class="element-cell"><input type="number" data-bind="value:podtrzymaniePodawanie" disabled="disabled"/></div>
+			<div class="element-cell">zmien na:</div><div class="element-cell"><input type="number" data-bind="value:podtrzymaniePodawanieNowa"/></div>
+			<div class="element-full-row"><strong>przerwa(&deg;C):</strong></div>
+			<div class="element-cell">ustawione:</div><div class="element-cell"><input type="number" data-bind="value:podtrzymaniePrzerwa" disabled="disabled"/></div>
+			<div class="element-cell">zmien na:</div><div class="element-cell"><input type="number" data-bind="value:podtrzymaniePrzerwaNowa"/></div>
+			<div style="clear:both"></div>
+		</div>
+		<div class="ustawienia-element">
+			<button data-bind="click:save">Zapisz</button>
+		</div>
+	</div>
+<div id="ustawieniaOgrzewanie" class="block">
+	<span class="description">Ustawienia - Ogrzewanie</span>
+	<div class="ustawienia-element">
+		<div class="element-cell">tryb</div>
+		<div class="element-cell"><select id="ogrzewanie-tryb" disabled="disabled">
+			<option>Reczny</option>
+			<option>Automatyczny 1</option>
+			<option>Automatyczny 2</option>
+			<option>Automatyczny 3</option>
+			</select>
+		</div>
+	</div>
+	<div class="ustawienia-element">
+		<div class="element-full-row"><strong>Zadana temperatura(&deg;C):</strong></div>
+		<div class="element-cell">ustawione:</div><div class="element-cell"><input type="number" data-bind="value:ogrzewanieZadana" disabled="disabled"/></div>
+		<div class="element-cell">zmien na:</div><div class="element-cell"><input type="number" data-bind="value:ogrzewanieZadanaNowa"/></div>
+		<div style="clear:both"></div>
+	</div>
+	
+	<div class="ustawienia-element">
+		<div class="element-full-row"><strong>Temperatura zadzialania(&deg;C):</strong></div>
+		<div class="element-cell">ustawione:</div><div class="element-cell"><input type="number" data-bind="value:ogrzewanieZadzialanie" disabled="disabled"/></div>
+		<div class="element-cell">zmien na:</div><div class="element-cell"><input type="number" data-bind="value:ogrzewanieZadzialanieNowa"/></div>
+	<div style="clear:both"></div>
+	</div>
+	<div class="ustawienia-element">
+		<div class="element-full-row"><strong>Minimalne zadzialanie (sekundy):</strong></div>
+		<div class="element-cell">ustawione:</div><div class="element-cell"><input type="number" data-bind="value:ogrzewanieMinimum" disabled="disabled"/></div>
+		<div class="element-cell">zmien na:</div><div class="element-cell"><input type="number" data-bind="value:ogrzewanieMinimumNowa" /></div>
+	<div style="clear:both"></div>
+	</div>	
+	<div class="ustawienia-element">
+		<button data-bind="click:save">Zapisz</button>
+	</div>
+</div>
+<div id="ustawieniaBoiler" class="block">
+<span class="description">Ustawienia - Boiler</span>
+
+<div class="ustawienia-element">
+<div class="element-cell">tryb</div>
+<div class="element-cell"><select id="boiler-tryb" disabled="disabled">
+	<option>Piec</option>
+	<option>Elektryczny - Autonomiczny</option>
+	<option>Elektryczny - Sterowany</option>
+	</select>
+</div>
+</div>
+
+<div class="ustawienia-element">
+	<div class="element-full-row"><strong>Zadana temperatura(&deg;C):</strong></div>
+	<div class="element-cell">ustawione:</div><div class="element-cell"><input type="number" data-bind="value:boilerZadana" disabled="disabled"/></div>
+	<div class="element-cell">zmien na:</div><div class="element-cell"><input type="number" data-bind="value:boilerZadanaNowa" /></div>
+	<div style="clear:both"></div>
+</div>
+
+<div class="ustawienia-element">
+	<div class="element-full-row"><strong>Temperatura zadzialania(&deg;C):</strong></div>
+	<div class="element-cell">ustawione:</div><div class="element-cell"><input type="number" data-bind="value:boilerZadzialanie" disabled="disabled"/></div>
+	<div class="element-cell">zmien na:</div><div class="element-cell"><input type="number" data-bind="value:boilerZadzialanieNowa"/></div>
+<div style="clear:both"></div>
+</div>
+<div class="ustawienia-element">
+<button data-bind="click:save">Zapisz</button>
+</div>
+</div>
+
+</body></html>
