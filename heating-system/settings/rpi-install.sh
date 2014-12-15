@@ -66,18 +66,35 @@ npm install es6-promise
 
 #node-red modules
 npm install node-red-node-mysql
+npm install express --save
+npm install nopt
+npm install ds18b20
 
 #node red
 #latest file from: https://gist.github.com/Belphemur/cf91100f81f2b37b3e94
 wget https://gist.githubusercontent.com/Belphemur/cf91100f81f2b37b3e94/raw/72e9a7e779ae343121ce535e312a9872fc9d5fb6/node-red
 sudo mv node-red /etc/init.d/
+sudo chmod +x /etc/init.d/node-red
 sudo update-rc.d node-red defaults
 
 git clone https://github.com/jjromannet/node-red.git
+
 ln -s /home/pi/installs/node-red /home/pi/node-red 
+#DHT Driver
+#http://malinowepi.pl/post/80178679087/dht11-czujnik-temperatury-i-wilgotnosci-uklad
+git clone git://github.com/adafruit/Adafruit-Raspberry-Pi-Python-Code.git
 
 
 #deploy project ...
+git clone git://github.com/jjromannet/node-red-projects.git
+
+cp ~/installs/node-red-projects/heating-system/settings/settings.js ~/node-red/
+
+cp ~/installs/node-red-projects/heating-system/flow/flows_raspberrypi.json ~/node-red/
+
+cp -R ~/installs/node-red-projects/heating-system/front-end/* ~/node-red/public/
+
+mysql -u root -p node-red < ~/installs/node-red-projects/heating-system/database/database-dump/database.sql
 
 #TODO ...
 
