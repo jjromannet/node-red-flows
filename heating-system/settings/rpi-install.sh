@@ -1,3 +1,6 @@
+#argument 1 - front end password 
+#argument 2 - database root password 
+
 #sudo raspi-config
 #
 #		a. Expand filesystem
@@ -8,6 +11,7 @@ sudo apt-get update
 
 #remove unnecessary packages
 apt-get --auto-remove --purge remove aptitude aptitude-common aspell aspell-en cifs-utils dbus dbus-x11 xserver-xorg-video-fbturbo gnome-icon-theme gnome-themes-standard-data dillo scratch xserver-xorg-input-synaptics zenity zenity-common xpdf xinit  xfonts-utils xfonts-encodings x11-common x11-utils x11-xkb-utils xarchiver timidity  
+sudo apt-get -y install screen
 sudo apt-get clean
 
 #update remaining packages 
@@ -39,22 +43,23 @@ sudo apt-key add mosquitto-repo.gpg.key
 cd /etc/apt/sources.list.d/
 sudo wget http://repo.mosquitto.org/debian/mosquitto-stable.list
 
-sudo apt-get update
-sudo apt-get install mosquitto
+sudo apt-get -y install mosquitto
 
-#install & config MySQL
-# TODO: sailent instalation - root password needed
-sudo apt-get install mysql-server
+#install mysql silently
+sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password $2'
+sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password $2'
+sudo apt-get -y install mysql-server
+
+
 #add remote access for root
 mysql -u root -p
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'
-IDENTIFIED BY 'password' WITH GRANT OPTION;
+IDENTIFIED BY '$2' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 exit
 
 sed 's/127.0.0.1/0.0.0.0/g' /etc/mysql/my.cnf | sudo tee /etc/mysql/my.cnf
-
-#TODO: potentially decrease caches sizes
+#TODO: tune mysql cache / buffers size for raspberry pi
 
 #setup kernel modules to startup
 echo wiring | sudo tee --append /etc/modules
@@ -65,9 +70,6 @@ echo w1-therm | sudo tee --append /etc/modules
 npm install es6-promise
 
 #node-red modules
-npm install node-red-node-mysql
-npm install express --save
-npm install nopt
 npm install ds18b20
 
 #node red
@@ -80,6 +82,8 @@ sudo update-rc.d node-red defaults
 git clone https://github.com/jjromannet/node-red.git
 
 ln -s /home/pi/installs/node-red /home/pi/node-red 
+cd /home/pi/node-red
+npm install --production
 #DHT Driver
 #http://malinowepi.pl/post/80178679087/dht11-czujnik-temperatury-i-wilgotnosci-uklad
 git clone git://github.com/adafruit/Adafruit-Raspberry-Pi-Python-Code.git
@@ -88,7 +92,10 @@ git clone git://github.com/adafruit/Adafruit-Raspberry-Pi-Python-Code.git
 #deploy project ...
 git clone git://github.com/jjromannet/node-red-projects.git
 
-cp ~/installs/node-red-projects/heating-system/settings/settings.js ~/node-red/
+#replace password:
+passwordMd5=`echo -n $1 | md5sum | awk '{ print $1 }'`
+#cp ~/installs/node-red-projects/heating-system/settings/settings.js ~/node-red/
+sed "s/{PASSWORD}/$passwordMd5/g" ~/installs/node-red-projects/heating-system/settings/settings.js | sudo tee ~/node-red/
 
 cp ~/installs/node-red-projects/heating-system/flow/flows_raspberrypi.json ~/node-red/
 
