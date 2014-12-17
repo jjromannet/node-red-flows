@@ -1,25 +1,54 @@
+#!/bin/bash	
+#argument 3 - stage 
+#	1 - copy install script from boot
+#	2 - remove desktop and not used packages
+#	3 - install and deploy 
+
 #argument 1 - front end password 
 #argument 2 - database root password 
 
-#sudo raspi-config
+if [ "$3" == "1" ]
+then
+	echo 'Stage: 1'
+
+
+sudo cp /boot/rpi-install.sh /home/pi/
+sudo chown pi rpi-install.sh
+sudo chgrp pi rpi-install.sh
+chmod +x rpi-install.sh
+fi
 #
-#		a. Expand filesystem
-#		b. Change user password
+#--------- END OF STAGE 1
+#
+
+if [ "$3" == "2" ]
+then
+	echo 'Stage: 2'
+#sudo raspi-config
+#		a. Expand filesystem - not really needed 
+
+echo "pi:$1" | sudo chpasswd
 
 # retrieve info about most recent packages
-sudo apt-get update
+sudo apt-get --yes --force-yes update
 
 #remove unnecessary packages
-apt-get --auto-remove --purge remove aptitude aptitude-common aspell aspell-en cifs-utils dbus dbus-x11 xserver-xorg-video-fbturbo gnome-icon-theme gnome-themes-standard-data dillo scratch xserver-xorg-input-synaptics zenity zenity-common xpdf xinit  xfonts-utils xfonts-encodings x11-common x11-utils x11-xkb-utils xarchiver timidity  
-sudo apt-get -y install screen
-sudo apt-get clean
+sudo apt-get --auto-remove --purge --yes --force-yes remove aptitude aptitude-common aspell aspell-en cifs-utils dbus dbus-x11 xserver-xorg-video-fbturbo gnome-icon-theme gnome-themes-standard-data dillo scratch xserver-xorg-input-synaptics zenity zenity-common xpdf xinit  xfonts-utils xfonts-encodings x11-common x11-utils x11-xkb-utils xarchiver timidity 'libx11-.*' task-desktop
+sudo apt-get --yes --force-yes install screen
+sudo apt-get --yes --force-yes clean
 
 #update remaining packages 
-sudo apt-get upgrade
+sudo apt-get --yes --force-yes upgrade
 
 #reboot just in case
 sudo reboot
-
+fi
+#
+#--------- END OF STAGE 2
+#
+if [ "$3" == "3" ]
+then
+	echo 'Stage: 3'
 #create working directory
 mkdir installs
 cd installs
@@ -36,7 +65,7 @@ cd wiringPi
 ./build
 
 #install Mosquitto
-cd ~/installs
+cd /home/pi/installs
 wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key
 sudo apt-key add mosquitto-repo.gpg.key
 
@@ -52,11 +81,10 @@ sudo apt-get -y install mysql-server
 
 
 #add remote access for root
-mysql -u root -p
-GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'
-IDENTIFIED BY '$2' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
-exit
+echo -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'\n"\
+"IDENTIFIED BY '$2' WITH GRANT OPTION;\n"\
+"FLUSH PRIVILEGES;\n" | mysql -u root --password=$2
+
 
 sed 's/127.0.0.1/0.0.0.0/g' /etc/mysql/my.cnf | sudo tee /etc/mysql/my.cnf
 #TODO: tune mysql cache / buffers size for raspberry pi
@@ -94,18 +122,17 @@ git clone git://github.com/jjromannet/node-red-projects.git
 
 #replace password:
 passwordMd5=`echo -n $1 | md5sum | awk '{ print $1 }'`
-#cp ~/installs/node-red-projects/heating-system/settings/settings.js ~/node-red/
-sed "s/{PASSWORD}/$passwordMd5/g" ~/installs/node-red-projects/heating-system/settings/settings.js | sudo tee ~/node-red/
+sed "s/{PASSWORD}/$passwordMd5/g" /home/pi/installs/node-red-projects/heating-system/settings/settings.js | sudo tee /home/pi/node-red/
 
-cp ~/installs/node-red-projects/heating-system/flow/flows_raspberrypi.json ~/node-red/
+cp /home/pi/installs/node-red-projects/heating-system/flow/flows_raspberrypi.json /home/pi/node-red/
 
-cp -R ~/installs/node-red-projects/heating-system/front-end/* ~/node-red/public/
+cp -R /home/pi/installs/node-red-projects/heating-system/front-end/* /home/pi/node-red/public/
 
-mysql -u root -p node-red < ~/installs/node-red-projects/heating-system/database/database-dump/database.sql
+mysql -u root -password=$2 node-red < ~/installs/node-red-projects/heating-system/database/database-dump/database.sql
 
-#TODO ...
+#TODO flow incremental deployment
 
-#database deployment
-#TODO clean deployment
-#TODO incramental deployment
-
+fi
+#
+#--------- END OF STAGE 3
+#
