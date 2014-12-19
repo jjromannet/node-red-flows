@@ -1,0 +1,67 @@
+
+
+<script type="text/x-red" data-template-name="ds18b20">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+	<div class="form-row">
+        <label for="node-input-readType"><i class="fa fa-tasks"></i> Node type</label>
+		<select id="node-input-readType" style="width:270px !important">
+          <option value="read-all">Read All</option>
+          <option value="fixed-sensor">Fixed SensorID</option>
+          <option value="payload-sensor">Payload SensorID</option>
+        </select>
+    </div>
+    <div class="form-row" id="fixed-details">
+        <label for="node-input-sensorid"><i class="icon-tag"></i> SensorID</label>
+        <input type="text" id="node-input-sensorid" placeholder="">
+    </div>
+	<div class="form-row" id="payload-details">
+        <label for="node-input-property"><i class="icon-tag"></i> Payload property to use</label>
+        <input type="text" id="node-input-property" placeholder="">
+    </div>	
+</script>
+
+<script type="text/x-red" data-help-name="ds18b20">
+    <p>Read All - returns reading from all termometerns on the wire</p>
+	<p>Fixed SensorID - returns reading for sensor of specified ID</p>
+	<p>Payload SensorID - It gets SesorID from msg.payload['SPECIFIED_PROPERTY']</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('ds18b20',{
+        category: "output",
+        color: "#3FADB5",
+        defaults: {
+            name: {value:""},
+            sensorid: {value:""},
+			readType: {value:"fixed-sensor"},
+			property: {value:""}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "file.png",
+        label: function() {
+            return this.readType === "read-all" ? "DS18B20 Read All" : ( "DS18B20 " + this.name || "ds18b20" );
+        },
+		oneditprepare : function(){
+			var _showHide = function(value){
+				if (value == "fixed-sensor") {
+					$("#fixed-details").show();
+					$("#payload-details").hide();
+				}else if (value == "payload-sensor") {
+					$("#fixed-details").hide();
+					$("#payload-details").show();
+				}else if (value == "read-all") {
+					$("#payload-details").hide();
+					$("#fixed-details").hide();
+				}
+			}
+			_showHide(this.readType);
+			$("#node-input-readType").on("change",function() {
+				_showHide(this.value);
+			});
+		}
+    });
+</script>

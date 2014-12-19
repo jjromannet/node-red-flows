@@ -72,11 +72,12 @@ sudo apt-key add mosquitto-repo.gpg.key
 cd /etc/apt/sources.list.d/
 sudo wget http://repo.mosquitto.org/debian/mosquitto-stable.list
 
+cd /home/pi/installs/
 sudo apt-get -y install mosquitto
 
 #install mysql silently
-sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password $2'
-sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password $2'
+sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password $2"
+sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $2"
 sudo apt-get -y install mysql-server
 
 
@@ -102,6 +103,7 @@ npm install ds18b20
 
 #node red
 #latest file from: https://gist.github.com/Belphemur/cf91100f81f2b37b3e94
+cd /home/pi/installs/
 wget https://gist.githubusercontent.com/Belphemur/cf91100f81f2b37b3e94/raw/72e9a7e779ae343121ce535e312a9872fc9d5fb6/node-red
 sudo mv node-red /etc/init.d/
 sudo chmod +x /etc/init.d/node-red
@@ -114,19 +116,21 @@ cd /home/pi/node-red
 npm install --production
 #DHT Driver
 #http://malinowepi.pl/post/80178679087/dht11-czujnik-temperatury-i-wilgotnosci-uklad
+cd /home/pi/installs/
 git clone git://github.com/adafruit/Adafruit-Raspberry-Pi-Python-Code.git
-
 
 #deploy project ...
 git clone git://github.com/jjromannet/node-red-projects.git
 
 #replace password:
 passwordMd5=`echo -n $1 | md5sum | awk '{ print $1 }'`
-sed "s/{PASSWORD}/$passwordMd5/g" /home/pi/installs/node-red-projects/heating-system/settings/settings.js | sudo tee /home/pi/node-red/
+sed "s/{PASSWORD}/$passwordMd5/g" /home/pi/installs/node-red-projects/heating-system/settings/settings.js > /home/pi/node-red/settings.js
 
 cp /home/pi/installs/node-red-projects/heating-system/flow/flows_raspberrypi.json /home/pi/node-red/
 
 cp -R /home/pi/installs/node-red-projects/heating-system/front-end/* /home/pi/node-red/public/
+
+echo -e "CREATE DATABASE `node-red`;" | mysql -u root --password=$2
 
 mysql -u root -password=$2 node-red < ~/installs/node-red-projects/heating-system/database/database-dump/database.sql
 
