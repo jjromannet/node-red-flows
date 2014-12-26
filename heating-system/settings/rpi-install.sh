@@ -135,9 +135,10 @@ git clone git://github.com/jjromannet/node-red-projects.git
 
 #replace password:
 passwordMd5=`echo -n $1 | md5sum | awk '{ print $1 }'`
-sed "s/{PASSWORD}/$passwordMd5/g" /home/pi/installs/node-red-projects/heating-system/settings/settings.js > /home/pi/node-red/settings.js
+randomHash=`head /dev/urandom | sha256sum  | awk '{ print $1 }'`
+cat /home/pi/installs/node-red-projects/heating-system/settings/settings.js | sed "s/{PASSWORD}/$passwordMd5/g" | sed "s/{SQLSECRET}/$randomHash/g" > /home/pi/node-red/settings.js
 #TODO: Test
-cat /home/pi/installs/node-red-projects/heating-system/settings/flows_raspberrypi_cred.json | sed "s/{PASSWORD}/$NRUpassword/g" | sed "s/{LOGIN}/$NRUlogin/g" | sudo tee /home/pi/node-red/flows_raspberrypi_cred.json
+cat /home/pi/installs/node-red-projects/heating-system/settings/flows_raspberrypi_cred.json | sed "s/{NRUPASSWORD}/$NRUpassword/g" | sed "s/{NRULOGIN}/$NRUlogin/g" | sudo tee /home/pi/node-red/flows_raspberrypi_cred.json
 
 cp /home/pi/installs/node-red-projects/heating-system/flow/flows_raspberrypi.json /home/pi/node-red/
 
