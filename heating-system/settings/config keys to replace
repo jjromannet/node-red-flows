@@ -1,0 +1,4 @@
+{SQLSECRET}, settings.js, configs.php
+{PASSWORD}, settings.js
+{NRUPASSWORD}, flows_raspberrypi_cred.json
+{NRULOGIN}, flows_raspberrypi_cred.json

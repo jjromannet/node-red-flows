@@ -86,6 +86,16 @@ echo -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'\n"\
 "IDENTIFIED BY '$2' WITH GRANT OPTION;\n"\
 "FLUSH PRIVILEGES;\n" | mysql -u root --password=$2
 
+#creating node-red user with random username and password
+
+randomHash=`head /dev/urandom | sha256sum  | awk '{ print $1 }'`
+#TODO: set up node-red user
+NRUlogin="node-red-${randomHash:0:4}"
+NRUpassword=${randomHash:4}
+
+echo -e "CREATE USER '$NRUlogin'@'localhost' IDENTIFIED BY '$NRUpassword';\n"\
+"GRANT SELECT,INSERT,UPDATE ON \`node-red\`.* TO '$NRUlogin'@'localhost';\n"\
+"FLUSH PRIVILEGES;\n" | mysql -u root --password=$2
 
 sed 's/127.0.0.1/0.0.0.0/g' /etc/mysql/my.cnf | sudo tee /etc/mysql/my.cnf
 #TODO: tune mysql cache / buffers size for raspberry pi
@@ -100,6 +110,7 @@ npm install es6-promise
 
 #node-red modules
 npm install ds18b20
+npm install node-red-node-mysql
 
 #node red
 #latest file from: https://gist.github.com/Belphemur/cf91100f81f2b37b3e94
@@ -125,6 +136,8 @@ git clone git://github.com/jjromannet/node-red-projects.git
 #replace password:
 passwordMd5=`echo -n $1 | md5sum | awk '{ print $1 }'`
 sed "s/{PASSWORD}/$passwordMd5/g" /home/pi/installs/node-red-projects/heating-system/settings/settings.js > /home/pi/node-red/settings.js
+#TODO: Test
+cat /home/pi/installs/node-red-projects/heating-system/settings/flows_raspberrypi_cred.json | sed "s/{PASSWORD}/$NRUpassword/g" | sed "s/{LOGIN}/$NRUlogin/g" | sudo tee /home/pi/node-red/flows_raspberrypi_cred.json
 
 cp /home/pi/installs/node-red-projects/heating-system/flow/flows_raspberrypi.json /home/pi/node-red/
 
@@ -132,7 +145,7 @@ cp -R /home/pi/installs/node-red-projects/heating-system/front-end/* /home/pi/no
 
 echo -e "CREATE DATABASE `node-red`;" | mysql -u root --password=$2
 
-mysql -u root -password=$2 node-red < ~/installs/node-red-projects/heating-system/database/database-dump/database.sql
+ -u root -password=$2 node-red < ~/installs/node-red-projects/heating-system/database/database-dump/database.sql
 
 #TODO flow incremental deployment
 
