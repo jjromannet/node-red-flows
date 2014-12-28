@@ -18,8 +18,8 @@ if($_GET['action']=="GETMAX"){
 	$postdata = print_r($_POST, true);
 	$postdata .= $HTTP_RAW_POST_DATA ;
 	$firstLineEnds = strpos($HTTP_RAW_POST_DATA, "\n");
-	$signature = substr ( $HTTP_RAW_POST_DATA , 0 , $firstLineEnds);
 	$sql = substr ( $HTTP_RAW_POST_DATA , $firstLineEnds+1, 10240); // limit input to limit hash collisions possibilities
+	$signature = substr ( $sql , 0 , $firstLineEnds);
 	$authorised = false;
 	$serverSideSignature = hash ( 'sha256' , "{$config['sqlSecret']}{$sql}");
 	if($serverSideSignature == $signature){
