@@ -123,7 +123,7 @@ module.exports = {
 		sense:require('ds18b20'),
 		http:require('http'),
 		crypto:require('crypto'),
-		sqlSecret:{SQLSECRET}
+		sqlSecret:'{SQLSECRET}'
         // os:require('os'),
         // bonescript:require('bonescript'),
         // arduino:require('duino')

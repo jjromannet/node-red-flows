@@ -116,6 +116,7 @@ npm install node-red-node-mysql
 #latest file from: https://gist.github.com/Belphemur/cf91100f81f2b37b3e94
 cd /home/pi/installs/
 wget https://gist.githubusercontent.com/Belphemur/cf91100f81f2b37b3e94/raw/72e9a7e779ae343121ce535e312a9872fc9d5fb6/node-red
+
 sudo mv node-red /etc/init.d/
 sudo chmod +x /etc/init.d/node-red
 sudo update-rc.d node-red defaults
@@ -146,7 +147,7 @@ cp -R /home/pi/installs/node-red-projects/heating-system/front-end/* /home/pi/no
 
 echo -e "CREATE DATABASE `node-red`;" | mysql -u root --password=$2
 
- -u root -password=$2 node-red < ~/installs/node-red-projects/heating-system/database/database-dump/database.sql
+mysql -u root --password=$2 node-red < /home/pi/installs/node-red-projects/heating-system/database/database-dump/database.sql
 
 #TODO flow incremental deployment
 
